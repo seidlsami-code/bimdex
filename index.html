@@ -276,7 +276,7 @@
       <div class="form-title">Neue Bim eintragen</div>
       <div class="form-row">
         <div class="form-group">
-          <label>Nummer (Pflichtfeld)</label>
+          <label>Nummer*</label>
           <input type="number" id="inp-num" placeholder="z.B. 042" min="1" max="999" />
         </div>
         <div class="form-group">
@@ -290,7 +290,7 @@
           </select>
         </div>
         <div class="form-group">
-          <label>Ort (optional)</label>
+          <label>Ort </label>
           <input type="text" id="inp-ort" placeholder="z.B. Hauptplatz" />
         </div>
 
@@ -298,7 +298,7 @@
              accept="image/*" = nur Bilder erlaubt
              capture="environment" = direkt die Rückkamera auf dem Handy öffnen -->
         <div class="foto-gruppe">
-          <label>Foto (optional)</label>
+          <label>Foto </label>
           <input type="file" id="inp-foto" accept="image/*" capture="environment" onchange="fotoGewaehlt(this)" />
           <button class="btn-foto" onclick="document.getElementById('inp-foto').click()">
             📷 Foto aufnehmen
@@ -360,7 +360,8 @@
       if (isNaN(num) || num < 1 || num > 999) { errEl.textContent = 'Nummer muss zwischen 1 und 999 liegen.'; return; }
       const numStr = String(num).padStart(3, '0');
       if (entries.find(e => e.num === numStr)) { errEl.textContent = 'Diese Bim hast du schon!'; return; }
-
+      if (!aktiveFotoBase64) { errEl.textContent = 'Bitte ein Foto aufnehmen!'; return; }
+      
       // foto: aktiveFotoBase64 enthält das Bild als Base64, oder null wenn kein Foto
       entries.push({ num: numStr, linie, ort, foto: aktiveFotoBase64, date: new Date().toLocaleDateString('de-AT') });
       entries.sort((a, b) => a.num.localeCompare(b.num));
