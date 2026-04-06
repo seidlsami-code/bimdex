@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BimDex – Linz Straßenbahn Sammelpass</title>
+  <title>Bim Jagd – Linz Straßenbahn Sammelpass</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
   <style>
@@ -218,6 +218,33 @@
       line-height: 1.8;
     }
     .empty-icon { font-size: 36px; display: block; margin-bottom: 10px; }
+
+    /* FOTO */
+    .foto-gruppe { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 140px; }
+    .foto-gruppe label { font-size: 12px; font-family: 'Space Mono', monospace; color: var(--txt2); }
+    .btn-foto {
+      display: flex; align-items: center; gap: 8px;
+      background: transparent; border: 0.5px solid var(--border);
+      border-radius: var(--radius-md); padding: 8px 12px;
+      font-family: 'Syne', sans-serif; font-size: 13px; color: var(--txt2);
+      cursor: pointer; transition: border-color 0.15s, color 0.15s;
+      width: 100%;
+    }
+    .btn-foto:hover { border-color: var(--bim-orange); color: var(--bim-orange); }
+    .foto-vorschau {
+      width: 100%; max-height: 80px; object-fit: cover;
+      border-radius: var(--radius-md); border: 0.5px solid var(--border);
+      display: none;
+    }
+    /* verstecktes file-input – wird per Klick auf btn-foto ausgelöst */
+    #inp-foto { display: none; }
+
+    /* Foto auf der Karte */
+    .bim-card-foto {
+      width: 100%; aspect-ratio: 4/3; object-fit: cover;
+      border-radius: var(--radius-md); margin-bottom: 8px;
+      border: 0.5px solid var(--border);
+    }
   </style>
 </head>
 <body>
@@ -225,7 +252,7 @@
 
     <div class="header">
       <div>
-        <div class="title">BimDex</div>
+        <div class="title">BIM JAGD</div>
         <div class="subtitle">Linz Straßenbahn Sammelpass</div>
       </div>
       <div class="stats">
@@ -259,12 +286,25 @@
             <option>Linie 1</option>
             <option>Linie 2</option>
             <option>Linie 3</option>
-            <option>Linie 4</option>
+            <option>Linie 50</option>
           </select>
         </div>
         <div class="form-group">
           <label>Ort (optional)</label>
           <input type="text" id="inp-ort" placeholder="z.B. Hauptplatz" />
+        </div>
+
+        <!-- FOTO-FELD: Ein verstecktes <input type="file"> öffnet die Kamera.
+             accept="image/*" = nur Bilder erlaubt
+             capture="environment" = direkt die Rückkamera auf dem Handy öffnen -->
+        <div class="foto-gruppe">
+          <label>Foto (optional)</label>
+          <input type="file" id="inp-foto" accept="image/*" capture="environment" onchange="fotoGewaehlt(this)" />
+          <button class="btn-foto" onclick="document.getElementById('inp-foto').click()">
+            📷 Foto aufnehmen
+          </button>
+          <!-- Vorschau-Bild, wird sichtbar sobald ein Foto gewählt wurde -->
+          <img id="foto-vorschau" class="foto-vorschau" alt="Vorschau" />
         </div>
         <button class="btn-add" onclick="addBim()">+ Eintragen</button>
       </div>
@@ -277,7 +317,7 @@
       <button class="filter-btn" onclick="setFilter('Linie 1', this)">Linie 1</button>
       <button class="filter-btn" onclick="setFilter('Linie 2', this)">Linie 2</button>
       <button class="filter-btn" onclick="setFilter('Linie 3', this)">Linie 3</button>
-      <button class="filter-btn" onclick="setFilter('Linie 4', this)">Linie 4</button>
+      <button class="filter-btn" onclick="setFilter('Linie 50', this)">Linie 50</button>
     </div>
 
     <div class="grid" id="grid"></div>
@@ -287,9 +327,25 @@
   <script>
     let entries = JSON.parse(localStorage.getItem('bim-jagd') || '[]');
     let activeFilter = 'alle';
+    let aktiveFotoBase64 = null; // hier wird das Foto zwischengespeichert
 
     function save() {
       localStorage.setItem('bim-jagd', JSON.stringify(entries));
+    }
+
+    // Wird aufgerufen sobald der Nutzer ein Foto auswählt oder fotografiert.
+    // FileReader liest die Bilddatei als Base64-Text, damit wir sie speichern können.
+    function fotoGewaehlt(input) {
+      const file = input.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        aktiveFotoBase64 = e.target.result; // Base64-String speichern
+        const vorschau = document.getElementById('foto-vorschau');
+        vorschau.src = aktiveFotoBase64;
+        vorschau.style.display = 'block'; // Vorschau anzeigen
+      };
+      reader.readAsDataURL(file); // Bild als Base64 lesen
     }
 
     function addBim() {
@@ -305,14 +361,28 @@
       const numStr = String(num).padStart(3, '0');
       if (entries.find(e => e.num === numStr)) { errEl.textContent = 'Diese Bim hast du schon!'; return; }
 
-      entries.push({ num: numStr, linie, ort, date: new Date().toLocaleDateString('de-AT') });
+      // foto: aktiveFotoBase64 enthält das Bild als Base64, oder null wenn kein Foto
+      entries.push({ num: numStr, linie, ort, foto: aktiveFotoBase64, date: new Date().toLocaleDateString('de-AT') });
       entries.sort((a, b) => a.num.localeCompare(b.num));
-      save();
+
+      try {
+        save();
+      } catch(e) {
+        // localStorage voll (zu viele Fotos) – Eintrag trotzdem anzeigen, aber warnen
+        errEl.textContent = 'Speicher voll! Eintrag ohne Foto gespeichert.';
+        entries[entries.length-1].foto = null;
+        save();
+      }
+
       render();
 
+      // Formular zurücksetzen
       document.getElementById('inp-num').value = '';
       document.getElementById('inp-ort').value = '';
       document.getElementById('inp-linie').value = '';
+      document.getElementById('inp-foto').value = '';
+      document.getElementById('foto-vorschau').style.display = 'none';
+      aktiveFotoBase64 = null;
     }
 
     function deleteBim(num) {
@@ -356,6 +426,8 @@
       grid.innerHTML = filtered.map(e => `
         <div class="bim-card">
           <button class="btn-del" onclick="deleteBim('${e.num}')" title="Löschen">✕</button>
+          <!-- Foto anzeigen falls vorhanden – src enthält den gespeicherten Base64-String -->
+          ${e.foto ? `<img class="bim-card-foto" src="${e.foto}" alt="Bim ${e.num}" />` : ''}
           <div class="bim-card-num">#${e.num}</div>
           ${e.linie ? `<div class="bim-card-linie">${e.linie}</div>` : ''}
           ${e.ort ? `<div class="bim-card-ort">${e.ort}</div>` : ''}
