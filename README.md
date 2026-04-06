@@ -1,3 +1,4 @@
+[bimdex (2).html](https://github.com/user-attachments/files/26503683/bimdex.2.html)
 <!DOCTYPE html>
 <html lang="de">
 <head>
