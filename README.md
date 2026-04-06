@@ -1,5 +1,3 @@
-# bimdex
-Finde alle Linzer Bims
 <!DOCTYPE html>
 <html lang="de">
 <head>
