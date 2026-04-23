@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bim Jagd – Linz Straßenbahn Sammelpass</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --orange: #D85A30;
+      --orange-light: #FAECE7;
+      --orange-dark: #4A1B0C;
+      --bg: #ffffff;
+      --bg2: #f5f4f0;
+      --border: rgba(0,0,0,0.12);
+      --txt: #1a1a18;
+      --txt2: #6b6a66;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --danger: #E24B4A;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #1c1c1a; --bg2: #252522;
+        --border: rgba(255,255,255,0.12);
+        --txt: #f0efe8; --txt2: #999890;
+        --orange-light: #3a1a0d; --orange-dark: #f5c4b3;
+      }
+    }
+
+    body { font-family: 'Syne', sans-serif; background: var(--bg2); color: var(--txt); min-height: 100vh; }
+
+    .page { display: none; }
+    .page.aktiv { display: block; }
+
+    /* ── AUTH SEITE ── */
+    .auth-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 1rem; }
+    .auth-card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 2rem; width: 100%; max-width: 380px; }
+    .auth-title { font-size: 32px; font-weight: 800; letter-spacing: -1px; color: var(--orange); margin-bottom: 4px; }
+    .auth-subtitle { font-size: 12px; font-family: 'Space Mono', monospace; color: var(--txt2); margin-bottom: 1.5rem; }
+    .auth-tabs { display: flex; margin-bottom: 1.5rem; border: 0.5px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
+    .auth-tab { flex: 1; padding: 8px; font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; background: transparent; border: none; cursor: pointer; color: var(--txt2); transition: all 0.15s; }
+    .auth-tab.aktiv { background: var(--orange); color: #fff; }
+    .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+    .field label { font-size: 12px; font-family: 'Space Mono', monospace; color: var(--txt2); }
+    .field input { font-family: 'Syne', sans-serif; font-size: 14px; padding: 10px 12px; border: 0.5px solid var(--border); border-radius: var(--radius-md); background: var(--bg2); color: var(--txt); outline: none; transition: border-color 0.15s; }
+    .field input:focus { border-color: var(--orange); }
+    .btn-primary { width: 100%; padding: 12px; background: var(--orange); color: #fff; border: none; border-radius: var(--radius-md); font-family: 'Syne', sans-serif; font-weight: 700; font-size: 15px; cursor: pointer; margin-top: 8px; transition: opacity 0.15s; }
+    .btn-primary:hover { opacity: 0.85; }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+    .auth-error { font-size: 12px; color: var(--danger); font-family: 'Space Mono', monospace; margin-top: 8px; min-height: 16px; }
+
+    /* ── HAUPT-APP ── */
+    .container { max-width: 680px; margin: 0 auto; padding: 2rem 1rem 4rem; }
+    .header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 1.5rem; gap: 12px; flex-wrap: wrap; }
+    .title { font-size: 36px; font-weight: 800; letter-spacing: -1.5px; line-height: 1; color: var(--orange); }
+    .subtitle { font-size: 13px; font-family: 'Space Mono', monospace; color: var(--txt2); margin-top: 5px; }
+    .header-rechts { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+    .stats { display: flex; gap: 8px; }
+    .stat { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-md); padding: 8px 16px; text-align: center; min-width: 76px; }
+    .stat-num { font-size: 24px; font-weight: 700; color: var(--orange); font-family: 'Space Mono', monospace; }
+    .stat-label { font-size: 11px; font-family: 'Space Mono', monospace; color: var(--txt2); margin-top: 2px; }
+    .btn-logout { font-size: 11px; font-family: 'Space Mono', monospace; color: var(--txt2); background: transparent; border: 0.5px solid var(--border); border-radius: 99px; padding: 4px 10px; cursor: pointer; transition: all 0.15s; }
+    .btn-logout:hover { border-color: var(--danger); color: var(--danger); }
+
+    .progress-label { font-size: 12px; font-family: 'Space Mono', monospace; color: var(--txt2); margin-bottom: 6px; }
+    .progress-bar-wrap { background: var(--bg); border-radius: 99px; height: 8px; margin-bottom: 1.75rem; overflow: hidden; border: 0.5px solid var(--border); }
+    .progress-bar-fill { height: 100%; background: var(--orange); border-radius: 99px; transition: width 0.4s ease; }
+
+    .form-card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 1.25rem; margin-bottom: 1.5rem; }
+    .form-title { font-size: 14px; font-weight: 700; margin-bottom: 14px; color: var(--txt); }
+    .form-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 120px; }
+    .form-group label { font-size: 12px; font-family: 'Space Mono', monospace; color: var(--txt2); }
+
+    input[type="number"], input[type="text"], select { font-family: 'Syne', sans-serif; font-size: 14px; padding: 8px 10px; border: 0.5px solid var(--border); border-radius: var(--radius-md); background: var(--bg2); color: var(--txt); outline: none; width: 100%; transition: border-color 0.15s; }
+    input:focus, select:focus { border-color: var(--orange); }
+    input[type="number"] { max-width: 110px; }
+
+    #inp-foto { display: none; }
+    .btn-foto { display: flex; align-items: center; gap: 8px; width: 100%; background: transparent; border: 0.5px solid var(--border); border-radius: var(--radius-md); padding: 8px 12px; font-family: 'Syne', sans-serif; font-size: 13px; color: var(--txt2); cursor: pointer; transition: all 0.15s; }
+    .btn-foto:hover { border-color: var(--orange); color: var(--orange); }
+    .btn-foto.hat-foto { border-color: var(--orange); color: var(--orange); background: var(--orange-light); }
+    #foto-vorschau { width: 100%; max-height: 100px; object-fit: cover; border-radius: var(--radius-md); border: 0.5px solid var(--border); display: none; margin-top: 6px; }
+
+    .btn-add { background: var(--orange); color: #fff; border: none; border-radius: var(--radius-md); padding: 10px 20px; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; cursor: pointer; white-space: nowrap; transition: opacity 0.15s, transform 0.1s; flex-shrink: 0; }
+    .btn-add:hover { opacity: 0.85; }
+    .btn-add:active { transform: scale(0.97); }
+    .btn-add:disabled { opacity: 0.5; cursor: not-allowed; }
+    .form-error { font-size: 12px; color: var(--danger); font-family: 'Space Mono', monospace; margin-top: 8px; min-height: 16px; }
+
+    .filter-row { display: flex; gap: 8px; margin-bottom: 1rem; flex-wrap: wrap; align-items: center; }
+    .filter-label { font-size: 12px; font-family: 'Space Mono', monospace; color: var(--txt2); }
+    .filter-btn { background: transparent; border: 0.5px solid var(--border); border-radius: 99px; padding: 4px 14px; font-family: 'Space Mono', monospace; font-size: 12px; cursor: pointer; color: var(--txt2); transition: all 0.15s; }
+    .filter-btn.aktiv { background: var(--orange); border-color: var(--orange); color: #fff; }
+    .filter-btn:hover:not(.aktiv) { border-color: var(--orange); color: var(--orange); }
+
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+    .bim-card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 12px; position: relative; transition: border-color 0.15s, transform 0.1s; animation: fadeIn 0.2s ease; }
+    .bim-card:hover { border-color: var(--orange); transform: translateY(-1px); }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+    .bim-card-foto { width: 100%; aspect-ratio: 4/3; object-fit: cover; border-radius: var(--radius-md); margin-bottom: 8px; border: 0.5px solid var(--border); }
+    .bim-card-num { font-size: 28px; font-weight: 800; letter-spacing: -1px; color: var(--orange); font-family: 'Space Mono', monospace; line-height: 1; }
+    .bim-card-linie { font-size: 11px; font-family: 'Space Mono', monospace; background: var(--orange-light); color: var(--orange-dark); display: inline-block; padding: 2px 8px; border-radius: 99px; margin: 6px 0 2px; }
+    .bim-card-ort { font-size: 12px; color: var(--txt2); margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .bim-card-date { font-size: 10px; font-family: 'Space Mono', monospace; color: var(--txt2); margin-top: 6px; opacity: 0.7; }
+    .btn-del { position: absolute; top: 8px; right: 8px; background: transparent; border: none; cursor: pointer; color: var(--txt2); font-size: 13px; padding: 2px 4px; opacity: 0.35; transition: opacity 0.15s, color 0.15s; border-radius: 4px; }
+    .btn-del:hover { opacity: 1; color: var(--danger); }
+    .empty { grid-column: 1/-1; text-align: center; padding: 2.5rem 1rem; color: var(--txt2); font-family: 'Space Mono', monospace; font-size: 13px; border: 0.5px dashed var(--border); border-radius: var(--radius-lg); line-height: 1.8; }
+    .empty-icon { font-size: 36px; display: block; margin-bottom: 10px; }
+    .laden { text-align: center; padding: 3rem; font-family: 'Space Mono', monospace; font-size: 13px; color: var(--txt2); }
+  </style>
+</head>
+<body>
+
+  <!-- SEITE 1: LOGIN / REGISTRIERUNG -->
+  <div class="page aktiv" id="seite-auth">
+    <div class="auth-wrap">
+      <div class="auth-card">
+        <div class="auth-title">BIM JAGD</div>
+        <div class="auth-subtitle">Linz Straßenbahn Sammelpass</div>
+        <div class="auth-tabs">
+          <button class="auth-tab aktiv" onclick="authTab('login', this)">Anmelden</button>
+          <button class="auth-tab" onclick="authTab('register', this)">Registrieren</button>
+        </div>
+        <div class="field">
+          <label>E-Mail</label>
+          <input type="email" id="auth-email" placeholder="deine@email.com" />
+        </div>
+        <div class="field">
+          <label>Passwort</label>
+          <input type="password" id="auth-passwort" placeholder="Mindestens 6 Zeichen" />
+        </div>
+        <button class="btn-primary" id="auth-btn" onclick="authAktion()">Anmelden</button>
+        <div class="auth-error" id="auth-error"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEITE 2: HAUPT-APP -->
+  <div class="page" id="seite-app">
+    <div class="container">
+
+      <div class="header">
+        <div>
+          <div class="title">BIM JAGD</div>
+          <div class="subtitle">Linz Straßenbahn Sammelpass</div>
+        </div>
+        <div class="header-rechts">
+          <div class="stats">
+            <div class="stat">
+              <div class="stat-num" id="s-total">0</div>
+              <div class="stat-label">gesammelt</div>
+            </div>
+            <div class="stat">
+              <div class="stat-num" id="s-missing">65</div>
+              <div class="stat-label">noch offen</div>
+            </div>
+          </div>
+          <button class="btn-logout" onclick="abmelden()">Abmelden (<span id="user-email"></span>)</button>
+        </div>
+      </div>
+
+      <div class="progress-label" id="progress-label">0 von 65 Garnituren entdeckt</div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" id="progress-bar" style="width:0%"></div>
+      </div>
+
+      <div class="form-card">
+        <div class="form-title">Neue Bim eintragen</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nummer (Pflichtfeld)</label>
+            <input type="number" id="inp-num" placeholder="z.B. 042" min="1" max="999" />
+          </div>
+          <div class="form-group">
+            <label>Linie</label>
+            <select id="inp-linie">
+              <option value="">— wählen —</option>
+              <option>Linie 1</option>
+              <option>Linie 2</option>
+              <option>Linie 3</option>
+              <option>Linie 50</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Ort (optional)</label>
+            <input type="text" id="inp-ort" placeholder="z.B. Hauptplatz" />
+          </div>
+          <!-- Foto: unsichtbares file-input, sichtbarer Button -->
+          <div class="form-group">
+            <label>Foto (Pflichtfeld)</label>
+            <input type="file" id="inp-foto" accept="image/*" capture="environment" onchange="fotoGewaehlt(this)" />
+            <button class="btn-foto" id="btn-foto" onclick="document.getElementById('inp-foto').click()">📷 Foto aufnehmen</button>
+            <img id="foto-vorschau" alt="Vorschau" />
+          </div>
+          <button class="btn-add" id="btn-add" onclick="addBim()">+ Eintragen</button>
+        </div>
+        <div class="form-error" id="form-error"></div>
+      </div>
+
+      <div class="filter-row">
+        <span class="filter-label">Filter:</span>
+        <button class="filter-btn aktiv" onclick="setFilter('alle', this)">Alle</button>
+        <button class="filter-btn" onclick="setFilter('Linie 1', this)">Linie 1</button>
+        <button class="filter-btn" onclick="setFilter('Linie 2', this)">Linie 2</button>
+        <button class="filter-btn" onclick="setFilter('Linie 3', this)">Linie 3</button>
+        <button class="filter-btn" onclick="setFilter('Linie 50', this)">Linie 50</button>
+      </div>
+
+      <div class="grid" id="grid">
+        <div class="laden">🚋 Wird geladen...</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Firebase über CDN laden (kein npm / kein Build-Tool nötig) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>
+
+  <script>
+    // ── FIREBASE KONFIGURATION ──
+    const firebaseConfig = {
+      apiKey: "AIzaSyDYdYvxYWgyUPEoE1fc3JqwH8I-sEZWkeA",
+      authDomain: "bimdex-8fd97.firebaseapp.com",
+      projectId: "bimdex-8fd97",
+      storageBucket: "bimdex-8fd97.firebasestorage.app",
+      messagingSenderId: "928303638218",
+      appId: "1:928303638218:web:bd3480422ac918adeaf633"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+
+    // Shortcuts für die drei Firebase-Dienste
+    const auth = firebase.auth();       // Login / Benutzerkonten
+    const db = firebase.firestore();    // Datenbank für Bim-Einträge
+    const storage = firebase.storage(); // Cloud-Speicher für Fotos
+
+    // ── GLOBALE VARIABLEN ──
+    let aktiverNutzer = null;
+    let aktiveFotoDatei = null;
+    let alleEintraege = [];
+    let aktiverFilter = 'alle';
+    let aktiveAuthAktion = 'login';
+    let echtzeitListener = null;
+
+    // ── SEITEN WECHSELN ──
+    function zeigSeite(id) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('aktiv'));
+      document.getElementById(id).classList.add('aktiv');
+    }
+
+    // ── AUTH TABS (Anmelden / Registrieren) ──
+    function authTab(aktion, btn) {
+      aktiveAuthAktion = aktion;
+      document.querySelectorAll('.auth-tab').forEach(b => b.classList.remove('aktiv'));
+      btn.classList.add('aktiv');
+      document.getElementById('auth-btn').textContent = aktion === 'login' ? 'Anmelden' : 'Registrieren';
+      document.getElementById('auth-error').textContent = '';
+    }
+
+    // ── LOGIN / REGISTRIERUNG ──
+    function authAktion() {
+      const email = document.getElementById('auth-email').value.trim();
+      const passwort = document.getElementById('auth-passwort').value;
+      const errEl = document.getElementById('auth-error');
+      const btn = document.getElementById('auth-btn');
+      errEl.textContent = '';
+
+      if (!email || !passwort) { errEl.textContent = 'Bitte E-Mail und Passwort eingeben.'; return; }
+
+      btn.disabled = true;
+      btn.textContent = '...';
+
+      const versprechen = aktiveAuthAktion === 'login'
+        ? auth.signInWithEmailAndPassword(email, passwort)
+        : auth.createUserWithEmailAndPassword(email, passwort);
+
+      versprechen.catch(fehler => {
+        const meldungen = {
+          'auth/invalid-email': 'Ungültige E-Mail-Adresse.',
+          'auth/user-not-found': 'Kein Konto mit dieser E-Mail gefunden.',
+          'auth/wrong-password': 'Falsches Passwort.',
+          'auth/invalid-credential': 'E-Mail oder Passwort falsch.',
+          'auth/email-already-in-use': 'Diese E-Mail ist bereits registriert.',
+          'auth/weak-password': 'Passwort muss mindestens 6 Zeichen haben.',
+        };
+        errEl.textContent = meldungen[fehler.code] || 'Fehler: ' + fehler.message;
+        btn.disabled = false;
+        btn.textContent = aktiveAuthAktion === 'login' ? 'Anmelden' : 'Registrieren';
+      });
+    }
+
+    // ── LOGIN-STATUS BEOBACHTEN ──
+    // Firebase ruft diese Funktion automatisch auf wenn der Login-Status sich ändert
+    auth.onAuthStateChanged(nutzer => {
+      if (nutzer) {
+        aktiverNutzer = nutzer;
+        document.getElementById('user-email').textContent = nutzer.email;
+        zeigSeite('seite-app');
+        ladeEintraege();
+      } else {
+        aktiverNutzer = null;
+        if (echtzeitListener) { echtzeitListener(); echtzeitListener = null; }
+        zeigSeite('seite-auth');
+      }
+    });
+
+    // ── ABMELDEN ──
+    function abmelden() {
+      auth.signOut();
+    }
+
+    // ── FOTO GEWÄHLT ──
+    // Wird aufgerufen wenn der Nutzer ein Foto aufnimmt
+    function fotoGewaehlt(input) {
+      const datei = input.files[0];
+      if (!datei) return;
+      aktiveFotoDatei = datei;
+      const reader = new FileReader();
+      reader.onload = e => {
+        const vorschau = document.getElementById('foto-vorschau');
+        vorschau.src = e.target.result;
+        vorschau.style.display = 'block';
+        document.getElementById('btn-foto').classList.add('hat-foto');
+        document.getElementById('btn-foto').textContent = '✓ Foto aufgenommen';
+      };
+      reader.readAsDataURL(datei);
+    }
+
+    // ── NEUE BIM EINTRAGEN ──
+    async function addBim() {
+      const numRaw = document.getElementById('inp-num').value.trim();
+      const linie = document.getElementById('inp-linie').value;
+      const ort = document.getElementById('inp-ort').value.trim();
+      const errEl = document.getElementById('form-error');
+      const btn = document.getElementById('btn-add');
+      errEl.textContent = '';
+
+      if (!numRaw) { errEl.textContent = 'Bitte eine Garniturnummer eingeben!'; return; }
+      const num = parseInt(numRaw);
+      if (isNaN(num) || num < 1 || num > 999) { errEl.textContent = 'Nummer muss zwischen 1 und 999 liegen.'; return; }
+      const numStr = String(num).padStart(3, '0');
+      if (alleEintraege.find(e => e.num === numStr)) { errEl.textContent = 'Diese Bim hast du schon!'; return; }
+      if (!aktiveFotoDatei) { errEl.textContent = 'Bitte ein Foto aufnehmen!'; return; }
+
+      btn.disabled = true;
+      btn.textContent = 'Wird gespeichert...';
+
+      try {
+        // SCHRITT 1: Foto zu Firebase Storage hochladen
+        const fotoPfad = `fotos/${aktiverNutzer.uid}/${numStr}_${Date.now()}.jpg`;
+        const fotoRef = storage.ref(fotoPfad);
+        await fotoRef.put(aktiveFotoDatei);
+
+        // SCHRITT 2: Download-URL des hochgeladenen Fotos holen
+        const fotoUrl = await fotoRef.getDownloadURL();
+
+        // SCHRITT 3: Eintrag in der Firestore-Datenbank speichern
+        await db.collection('bims').add({
+          num: numStr,
+          linie: linie,
+          ort: ort,
+          fotoUrl: fotoUrl,
+          datum: new Date().toLocaleDateString('de-AT'),
+          nutzerId: aktiverNutzer.uid,
+          erstellt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        // Formular zurücksetzen
+        document.getElementById('inp-num').value = '';
+        document.getElementById('inp-ort').value = '';
+        document.getElementById('inp-linie').value = '';
+        document.getElementById('inp-foto').value = '';
+        document.getElementById('foto-vorschau').style.display = 'none';
+        document.getElementById('btn-foto').classList.remove('hat-foto');
+        document.getElementById('btn-foto').textContent = '📷 Foto aufnehmen';
+        aktiveFotoDatei = null;
+
+      } catch(fehler) {
+        errEl.textContent = 'Fehler beim Speichern: ' + fehler.message;
+      }
+
+      btn.disabled = false;
+      btn.textContent = '+ Eintragen';
+    }
+
+    // ── EINTRÄGE LADEN (ECHTZEIT) ──
+    // Firestore beobachtet die Datenbank live – Änderungen erscheinen sofort
+    function ladeEintraege() {
+      echtzeitListener = db.collection('bims')
+        .where('nutzerId', '==', aktiverNutzer.uid)
+        .orderBy('num')
+        .onSnapshot(snapshot => {
+          alleEintraege = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          render();
+        }, fehler => {
+          console.error('Datenbank-Fehler:', fehler);
+        });
+    }
+
+    // ── EINTRAG LÖSCHEN ──
+    async function deleteBim(id, num) {
+      if (!confirm('Bim #' + num + ' wirklich löschen?')) return;
+      try {
+        await db.collection('bims').doc(id).delete();
+      } catch(fehler) {
+        alert('Fehler beim Löschen: ' + fehler.message);
+      }
+    }
+
+    // ── FILTER ──
+    function setFilter(f, btn) {
+      aktiverFilter = f;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('aktiv'));
+      btn.classList.add('aktiv');
+      render();
+    }
+
+    // ── ANZEIGE AKTUALISIEREN ──
+    function render() {
+      const total = alleEintraege.length;
+      const pct = Math.round((total / 65) * 100);
+      document.getElementById('s-total').textContent = total;
+      document.getElementById('s-missing').textContent = 65 - total;
+      document.getElementById('progress-bar').style.width = pct + '%';
+      document.getElementById('progress-label').textContent =
+        total + ' von 65 Garnituren entdeckt (' + pct + '%)';
+
+      const gefiltert = aktiverFilter === 'alle'
+        ? alleEintraege
+        : alleEintraege.filter(e => e.linie === aktiverFilter);
+
+      const grid = document.getElementById('grid');
+
+      if (gefiltert.length === 0) {
+        grid.innerHTML = `<div class="empty"><span class="empty-icon">🚋</span>Noch keine Bims hier.<br>Los geht's – fang an zu sammeln!</div>`;
+        return;
+      }
+
+      grid.innerHTML = gefiltert.map(e => `
+        <div class="bim-card">
+          <button class="btn-del" onclick="deleteBim('${e.id}', '${e.num}')" title="Löschen">✕</button>
+          ${e.fotoUrl ? `<img class="bim-card-foto" src="${e.fotoUrl}" alt="Bim ${e.num}" />` : ''}
+          <div class="bim-card-num">#${e.num}</div>
+          ${e.linie ? `<div class="bim-card-linie">${e.linie}</div>` : ''}
+          ${e.ort ? `<div class="bim-card-ort">${e.ort}</div>` : ''}
+          <div class="bim-card-date">${e.datum || ''}</div>
+        </div>
+      `).join('');
+    }
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && document.getElementById('seite-app').classList.contains('aktiv')) addBim();
+    });
+  </script>
+</body>
+</html>
