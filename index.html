@@ -7,42 +7,50 @@
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
-      --orange: #D85A30;
-      --orange-light: #FAECE7;
-      --orange-dark: #4A1B0C;
-      --grau: #8a8a85;
-      --bg: #ffffff;
-      --bg2: #f5f4f0;
-      --border: rgba(0,0,0,0.12);
-      --txt: #1a1a18;
-      --txt2: #6b6a66;
-      --radius-md: 8px;
-      --radius-lg: 12px;
-      --danger: #E24B4A;
-      --gruen: #1D9E75;
+      --orange: #D85A30; --orange-light: #FAECE7; --orange-dark: #4A1B0C;
+      --grau: #8a8a85; --bg: #ffffff; --bg2: #f5f4f0;
+      --border: rgba(0,0,0,0.12); --txt: #1a1a18; --txt2: #6b6a66;
+      --radius-md: 8px; --radius-lg: 12px; --danger: #E24B4A; --gruen: #1D9E75;
     }
-
     @media (prefers-color-scheme: dark) {
-      :root {
-        --bg: #1c1c1a; --bg2: #252522;
-        --border: rgba(255,255,255,0.12);
-        --txt: #f0efe8; --txt2: #999890;
-        --orange-light: #3a1a0d; --orange-dark: #f5c4b3;
-      }
+      :root { --bg: #1c1c1a; --bg2: #252522; --border: rgba(255,255,255,0.12); --txt: #f0efe8; --txt2: #999890; --orange-light: #3a1a0d; --orange-dark: #f5c4b3; }
     }
-
     body { font-family: "Syne", sans-serif; background: var(--bg2); color: var(--txt); min-height: 100vh; }
 
+    /* ── SEITEN ── */
+    .page { display: none; }
+    .page.aktiv { display: block; }
+
+    /* ── AUTH ── */
+    .auth-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 1rem; }
+    .auth-card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 2rem; width: 100%; max-width: 380px; }
+    .auth-title { font-size: 32px; font-weight: 800; letter-spacing: -1px; color: var(--orange); margin-bottom: 4px; }
+    .auth-subtitle { font-size: 12px; font-family: "Space Mono", monospace; color: var(--txt2); margin-bottom: 1.5rem; }
+    .auth-tabs { display: flex; margin-bottom: 1.5rem; border: 0.5px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
+    .auth-tab { flex: 1; padding: 8px; font-family: "Syne", sans-serif; font-size: 13px; font-weight: 700; background: transparent; border: none; cursor: pointer; color: var(--txt2); transition: all 0.15s; }
+    .auth-tab.aktiv { background: var(--orange); color: #fff; }
+    .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+    .field label { font-size: 12px; font-family: "Space Mono", monospace; color: var(--txt2); }
+    .field input { font-family: "Syne", sans-serif; font-size: 14px; padding: 10px 12px; border: 0.5px solid var(--border); border-radius: var(--radius-md); background: var(--bg2); color: var(--txt); outline: none; transition: border-color 0.15s; width: 100%; }
+    .field input:focus { border-color: var(--orange); }
+    .btn-primary { width: 100%; padding: 12px; background: var(--orange); color: #fff; border: none; border-radius: var(--radius-md); font-family: "Syne", sans-serif; font-weight: 700; font-size: 15px; cursor: pointer; margin-top: 8px; transition: opacity 0.15s; }
+    .btn-primary:hover { opacity: 0.85; }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+    .auth-error { font-size: 12px; color: var(--danger); font-family: "Space Mono", monospace; margin-top: 8px; min-height: 16px; }
+
+    /* ── HAUPT-APP ── */
     .container { max-width: 720px; margin: 0 auto; padding: 2rem 1rem 4rem; }
     .header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 1.5rem; gap: 12px; flex-wrap: wrap; }
     .title { font-size: 36px; font-weight: 800; letter-spacing: -1.5px; line-height: 1; color: var(--orange); }
     .subtitle { font-size: 13px; font-family: "Space Mono", monospace; color: var(--txt2); margin-top: 5px; }
+    .header-rechts { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
     .stats { display: flex; gap: 8px; }
     .stat { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-md); padding: 8px 16px; text-align: center; min-width: 76px; }
     .stat-num { font-size: 24px; font-weight: 700; color: var(--orange); font-family: "Space Mono", monospace; }
     .stat-label { font-size: 11px; font-family: "Space Mono", monospace; color: var(--txt2); margin-top: 2px; }
+    .btn-logout { font-size: 11px; font-family: "Space Mono", monospace; color: var(--txt2); background: transparent; border: 0.5px solid var(--border); border-radius: 99px; padding: 4px 10px; cursor: pointer; transition: all 0.15s; }
+    .btn-logout:hover { border-color: var(--danger); color: var(--danger); }
 
     .progress-label { font-size: 12px; font-family: "Space Mono", monospace; color: var(--txt2); margin-bottom: 6px; }
     .progress-bar-wrap { background: var(--bg); border-radius: 99px; height: 8px; margin-bottom: 1.75rem; overflow: hidden; border: 0.5px solid var(--border); }
@@ -56,13 +64,11 @@
     input[type="number"], input[type="text"] { font-family: "Syne", sans-serif; font-size: 14px; padding: 8px 10px; border: 0.5px solid var(--border); border-radius: var(--radius-md); background: var(--bg2); color: var(--txt); outline: none; width: 100%; transition: border-color 0.15s; }
     input:focus { border-color: var(--orange); }
     input[type="number"] { max-width: 110px; }
-
     #inp-foto { display: none; }
     .btn-foto { display: flex; align-items: center; gap: 8px; width: 100%; background: transparent; border: 0.5px solid var(--border); border-radius: var(--radius-md); padding: 8px 12px; font-family: "Syne", sans-serif; font-size: 13px; color: var(--txt2); cursor: pointer; transition: all 0.15s; }
     .btn-foto:hover { border-color: var(--orange); color: var(--orange); }
     .btn-foto.hat-foto { border-color: var(--gruen); color: var(--gruen); background: #e6f5f0; }
     #foto-vorschau { width: 100%; max-height: 100px; object-fit: cover; border-radius: var(--radius-md); border: 0.5px solid var(--border); display: none; margin-top: 6px; }
-
     .btn-add { background: var(--orange); color: #fff; border: none; border-radius: var(--radius-md); padding: 10px 20px; font-family: "Syne", sans-serif; font-weight: 700; font-size: 14px; cursor: pointer; white-space: nowrap; transition: opacity 0.15s, transform 0.1s; flex-shrink: 0; }
     .btn-add:hover { opacity: 0.85; }
     .btn-add:active { transform: scale(0.97); }
@@ -76,15 +82,12 @@
     .filter-btn:hover:not(.aktiv) { border-color: var(--orange); color: var(--orange); }
 
     .serie-label { font-size: 11px; font-family: "Space Mono", monospace; color: var(--txt2); letter-spacing: 1px; text-transform: uppercase; margin: 1.25rem 0 0.5rem; }
-
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
-
     .bim-card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 12px; position: relative; transition: border-color 0.15s, transform 0.1s; }
     .bim-card.gefunden:hover { border-color: var(--orange); transform: translateY(-1px); }
     .bim-card.offen { opacity: 0.42; }
     .bim-card.offen .bim-card-num { color: var(--grau); }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
-
     .bim-card-foto { width: 100%; aspect-ratio: 4/3; object-fit: cover; border-radius: var(--radius-md); margin-bottom: 8px; border: 0.5px solid var(--border); }
     .bim-card-placeholder { width: 100%; aspect-ratio: 4/3; border-radius: var(--radius-md); margin-bottom: 8px; border: 0.5px dashed var(--border); display: flex; align-items: center; justify-content: center; font-size: 22px; background: var(--bg2); }
     .bim-card-num { font-size: 24px; font-weight: 800; letter-spacing: -1px; color: var(--orange); font-family: "Space Mono", monospace; line-height: 1; }
@@ -92,15 +95,13 @@
     .bim-card-ort { font-size: 12px; color: var(--txt2); margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .bim-card-date { font-size: 10px; font-family: "Space Mono", monospace; color: var(--txt2); margin-top: 4px; opacity: 0.7; }
     .bim-card-spotted { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-family: "Space Mono", monospace; background: var(--orange-light); color: var(--orange-dark); padding: 2px 8px; border-radius: 99px; margin-top: 5px; }
-
     .btn-del { position: absolute; top: 8px; right: 8px; background: transparent; border: none; cursor: pointer; color: var(--txt2); font-size: 13px; padding: 2px 4px; opacity: 0.35; transition: opacity 0.15s, color 0.15s; border-radius: 4px; }
     .btn-del:hover { opacity: 1; color: var(--danger); }
+    .laden { text-align: center; padding: 3rem; font-family: "Space Mono", monospace; font-size: 13px; color: var(--txt2); }
 
     .toast { position: fixed; top: 1.5rem; left: 50%; transform: translateX(-50%) translateY(-120px); background: var(--gruen); color: #fff; padding: 14px 24px; border-radius: var(--radius-lg); font-family: "Syne", sans-serif; font-weight: 700; font-size: 15px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); z-index: 999; transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1); text-align: center; white-space: nowrap; }
     .toast.sichtbar { transform: translateX(-50%) translateY(0); }
     .toast-sub { font-size: 12px; font-weight: 400; opacity: 0.85; margin-top: 2px; font-family: "Space Mono", monospace; }
-
-    .speicher-warnung { font-size: 11px; font-family: "Space Mono", monospace; color: var(--txt2); text-align: center; margin-top: 1.5rem; opacity: 0.6; }
   </style>
 </head>
 <body>
@@ -110,152 +111,273 @@
     <div class="toast-sub" id="toast-sub"></div>
   </div>
 
-  <div class="container">
-
-    <div class="header">
-      <div>
-        <div class="title">BimDex</div>
-        <div class="subtitle">Linz Straßenbahn Sammelpass</div>
+  <!-- SEITE 1: LOGIN -->
+  <div class="page aktiv" id="seite-auth">
+    <div class="auth-wrap">
+      <div class="auth-card">
+        <div class="auth-title">BimDex</div>
+        <div class="auth-subtitle">Linz Straßenbahn Sammelpass</div>
+        <div class="auth-tabs">
+          <button class="auth-tab aktiv" onclick="authTab('login', this)">Anmelden</button>
+          <button class="auth-tab" onclick="authTab('register', this)">Registrieren</button>
+        </div>
+        <div class="field">
+          <label>E-Mail</label>
+          <input type="email" id="auth-email" placeholder="deine@email.com" />
+        </div>
+        <div class="field">
+          <label>Passwort</label>
+          <input type="password" id="auth-passwort" placeholder="Mindestens 6 Zeichen" />
+        </div>
+        <button class="btn-primary" id="auth-btn" onclick="authAktion()">Anmelden</button>
+        <div class="auth-error" id="auth-error"></div>
       </div>
-      <div class="stats">
-        <div class="stat">
-          <div class="stat-num" id="s-total">0</div>
-          <div class="stat-label">gesammelt</div>
-        </div>
-        <div class="stat">
-          <div class="stat-num" id="s-missing">62</div>
-          <div class="stat-label">noch offen</div>
-        </div>
-      </div>
     </div>
-
-    <div class="progress-label" id="progress-label">0 von 62 Garnituren entdeckt</div>
-    <div class="progress-bar-wrap">
-      <div class="progress-bar-fill" id="progress-bar" style="width:0%"></div>
-    </div>
-
-    <div class="form-card">
-      <div class="form-title">Bim eintragen / nochmals gesehen</div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>Nummer (Pflichtfeld)</label>
-          <input type="number" id="inp-num" placeholder="z.B. 012" min="1" max="999" />
-        </div>
-        <div class="form-group">
-          <label>Ort (optional)</label>
-          <input type="text" id="inp-ort" placeholder="z.B. Hauptplatz" />
-        </div>
-        <div class="form-group">
-          <label>Foto (beim 1. Mal Pflicht)</label>
-          <input type="file" id="inp-foto" accept="image/*" capture="environment" onchange="fotoGewaehlt(this)" />
-          <button class="btn-foto" id="btn-foto" onclick="document.getElementById('inp-foto').click()">📷 Foto aufnehmen</button>
-          <img id="foto-vorschau" alt="Vorschau" />
-        </div>
-        <button class="btn-add" id="btn-add" onclick="addBim()">+ Eintragen</button>
-      </div>
-      <div class="form-error" id="form-error"></div>
-    </div>
-
-    <div class="filter-row">
-      <span class="filter-label">Zeige:</span>
-      <button class="filter-btn aktiv" onclick="setFilter('alle', this)">Alle</button>
-      <button class="filter-btn" onclick="setFilter('gefunden', this)">Gefunden</button>
-      <button class="filter-btn" onclick="setFilter('offen', this)">Noch offen</button>
-    </div>
-
-    <div id="grid-wrap"></div>
-
-    <div class="speicher-warnung">⚠ Daten werden lokal im Browser gespeichert. Fotos verbrauchen Speicher – bei Problemen Supabase-Version verwenden.</div>
-
   </div>
 
+  <!-- SEITE 2: APP -->
+  <div class="page" id="seite-app">
+    <div class="container">
+      <div class="header">
+        <div>
+          <div class="title">BimDex</div>
+          <div class="subtitle">Linz Straßenbahn Sammelpass</div>
+        </div>
+        <div class="header-rechts">
+          <div class="stats">
+            <div class="stat"><div class="stat-num" id="s-total">0</div><div class="stat-label">gesammelt</div></div>
+            <div class="stat"><div class="stat-num" id="s-missing">62</div><div class="stat-label">noch offen</div></div>
+          </div>
+          <button class="btn-logout" onclick="abmelden()">Abmelden (<span id="user-email"></span>)</button>
+        </div>
+      </div>
+
+      <div class="progress-label" id="progress-label">0 von 62 Garnituren entdeckt</div>
+      <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progress-bar" style="width:0%"></div></div>
+
+      <div class="form-card">
+        <div class="form-title">Bim eintragen / nochmals gesehen</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nummer (Pflichtfeld)</label>
+            <input type="number" id="inp-num" placeholder="z.B. 012" min="1" max="999" />
+          </div>
+          <div class="form-group">
+            <label>Ort (optional)</label>
+            <input type="text" id="inp-ort" placeholder="z.B. Hauptplatz" />
+          </div>
+          <div class="form-group">
+            <label>Foto (beim 1. Mal Pflicht)</label>
+            <input type="file" id="inp-foto" accept="image/*" capture="environment" onchange="fotoGewaehlt(this)" />
+            <button class="btn-foto" id="btn-foto" onclick="document.getElementById('inp-foto').click()">📷 Foto aufnehmen</button>
+            <img id="foto-vorschau" alt="Vorschau" />
+          </div>
+          <button class="btn-add" id="btn-add" onclick="addBim()">+ Eintragen</button>
+        </div>
+        <div class="form-error" id="form-error"></div>
+      </div>
+
+      <div class="filter-row">
+        <span class="filter-label">Zeige:</span>
+        <button class="filter-btn aktiv" onclick="setFilter('alle', this)">Alle</button>
+        <button class="filter-btn" onclick="setFilter('gefunden', this)">Gefunden</button>
+        <button class="filter-btn" onclick="setFilter('offen', this)">Noch offen</button>
+      </div>
+
+      <div id="grid-wrap"><div class="laden">🚋 Wird geladen...</div></div>
+    </div>
+  </div>
+
+  <!-- Supabase über CDN laden -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <script>
+    // ── SUPABASE KONFIGURATION ──
+    const SUPABASE_URL = "https://sgjjyjgbxrylrcofgpxg.supabase.co";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNnamp5amdieHJ5bHJjb2ZncHhnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2MzkzNDIsImV4cCI6MjA5NTIxNTM0Mn0.OOr0tfDp3uunEd-8Y4sQRlo9SDdieJi7HB_ydr36Om0";
+    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
     // ── ALLE 62 GARNITUREN ──
     const SERIE_A = Array.from({length: 33}, (_, i) => ({ num: String(i+1).padStart(3,"0"), serie: "A" }));
     const SERIE_B = Array.from({length: 29}, (_, i) => ({ num: String(i+60).padStart(3,"0"), serie: "B" }));
     const ALLE_BIMS = [...SERIE_A, ...SERIE_B];
 
-    // ── DATEN AUS LOCALSTORAGE LADEN ──
-    // Struktur: { "001": { num, ort, fotoBase64, datum, spottings }, ... }
-    let daten = JSON.parse(localStorage.getItem("bimdex-v2") || "{}");
-    let aktiveFotoBase64 = null;
+    // ── GLOBALE VARIABLEN ──
+    let aktiverNutzer = null;
+    let aktiveFotoDatei = null;
+    let alleEintraege = [];
     let aktiverFilter = "alle";
+    let aktiveAuthAktion = "login";
 
-    function speichern() {
-      try {
-        localStorage.setItem("bimdex-v2", JSON.stringify(daten));
-      } catch(e) {
-        document.getElementById("form-error").textContent = "Speicher voll! Foto konnte nicht gespeichert werden.";
+    // ── SEITEN WECHSELN ──
+    function zeigSeite(id) {
+      document.querySelectorAll(".page").forEach(p => p.classList.remove("aktiv"));
+      document.getElementById(id).classList.add("aktiv");
+    }
+
+    // ── AUTH TABS ──
+    function authTab(aktion, btn) {
+      aktiveAuthAktion = aktion;
+      document.querySelectorAll(".auth-tab").forEach(b => b.classList.remove("aktiv"));
+      btn.classList.add("aktiv");
+      document.getElementById("auth-btn").textContent = aktion === "login" ? "Anmelden" : "Registrieren";
+      document.getElementById("auth-error").textContent = "";
+    }
+
+    // ── LOGIN / REGISTRIERUNG ──
+    async function authAktion() {
+      const email = document.getElementById("auth-email").value.trim();
+      const passwort = document.getElementById("auth-passwort").value;
+      const errEl = document.getElementById("auth-error");
+      const btn = document.getElementById("auth-btn");
+      errEl.textContent = "";
+      if (!email || !passwort) { errEl.textContent = "Bitte E-Mail und Passwort eingeben."; return; }
+      btn.disabled = true; btn.textContent = "...";
+
+      let fehler;
+      if (aktiveAuthAktion === "login") {
+        ({ error: fehler } = await sb.auth.signInWithPassword({ email, password: passwort }));
+      } else {
+        ({ error: fehler } = await sb.auth.signUp({ email, password: passwort }));
       }
+
+      if (fehler) {
+        const m = {
+          "Invalid login credentials": "E-Mail oder Passwort falsch.",
+          "User already registered": "Diese E-Mail ist bereits registriert.",
+          "Password should be at least 6 characters": "Passwort muss mind. 6 Zeichen haben.",
+        };
+        errEl.textContent = m[fehler.message] || fehler.message;
+        btn.disabled = false;
+        btn.textContent = aktiveAuthAktion === "login" ? "Anmelden" : "Registrieren";
+      }
+    }
+
+    // ── LOGIN-STATUS BEOBACHTEN ──
+    // Supabase ruft diese Funktion automatisch auf wenn sich der Login-Status ändert
+    sb.auth.onAuthStateChange((event, session) => {
+      if (session) {
+        aktiverNutzer = session.user;
+        document.getElementById("user-email").textContent = aktiverNutzer.email;
+        zeigSeite("seite-app");
+        ladeEintraege();
+      } else {
+        aktiverNutzer = null;
+        alleEintraege = [];
+        zeigSeite("seite-auth");
+      }
+    });
+
+    // ── ABMELDEN ──
+    async function abmelden() {
+      await sb.auth.signOut();
     }
 
     // ── FOTO GEWÄHLT ──
     function fotoGewaehlt(input) {
       const datei = input.files[0];
       if (!datei) return;
+      aktiveFotoDatei = datei;
       const reader = new FileReader();
       reader.onload = e => {
-        aktiveFotoBase64 = e.target.result;
         const v = document.getElementById("foto-vorschau");
-        v.src = aktiveFotoBase64;
+        v.src = e.target.result;
         v.style.display = "block";
         const btn = document.getElementById("btn-foto");
         btn.classList.add("hat-foto");
         btn.textContent = "✓ Foto aufgenommen";
       };
-      reader.readAsDataURL(datei);
+      reader.readAsDataURL(aktiveFotoDatei);
     }
 
     // ── BIM EINTRAGEN ──
-    function addBim() {
+    async function addBim() {
       const numRaw = document.getElementById("inp-num").value.trim();
       const ort = document.getElementById("inp-ort").value.trim();
       const errEl = document.getElementById("form-error");
+      const btn = document.getElementById("btn-add");
       errEl.textContent = "";
 
       if (!numRaw) { errEl.textContent = "Bitte eine Garniturnummer eingeben!"; return; }
       const numStr = String(parseInt(numRaw)).padStart(3, "0");
       if (!ALLE_BIMS.find(b => b.num === numStr)) { errEl.textContent = "Diese Garniturnummer existiert in Linz nicht."; return; }
 
-      const istNeu = !daten[numStr];
+      const vorhandener = alleEintraege.find(e => e.num === numStr);
+      const istNeu = !vorhandener;
 
-      if (istNeu && !aktiveFotoBase64) { errEl.textContent = "Beim ersten Spotting bitte ein Foto aufnehmen!"; return; }
+      if (istNeu && !aktiveFotoDatei) { errEl.textContent = "Beim ersten Spotting bitte ein Foto aufnehmen!"; return; }
 
-      if (istNeu) {
-        // Erster Fund: Eintrag anlegen mit Foto
-        daten[numStr] = {
-          num: numStr,
-          ort: ort,
-          foto: aktiveFotoBase64,
-          datum: new Date().toLocaleDateString("de-AT"),
-          spottings: 1
-        };
-      } else {
-        // Wiedersehen: nur Zähler erhöhen
-        daten[numStr].spottings = (daten[numStr].spottings || 1) + 1;
+      btn.disabled = true;
+      btn.textContent = "Wird gespeichert...";
+
+      try {
+        if (istNeu) {
+          // SCHRITT 1: Foto zu Supabase Storage hochladen
+          const dateiName = aktiverNutzer.id + "/" + numStr + "_" + Date.now() + ".jpg";
+          const { error: uploadFehler } = await sb.storage.from("fotos").upload(dateiName, aktiveFotoDatei);
+          if (uploadFehler) throw uploadFehler;
+
+          // SCHRITT 2: Öffentliche URL des Fotos holen
+          const { data: urlData } = sb.storage.from("fotos").getPublicUrl(dateiName);
+          const fotoUrl = urlData.publicUrl;
+
+          // SCHRITT 3: Eintrag in der Datenbank speichern
+          const { error: dbFehler } = await sb.from("bims").insert({
+            num: numStr,
+            ort: ort,
+            foto_url: fotoUrl,
+            datum: new Date().toLocaleDateString("de-AT"),
+            spottings: 1,
+            nutzer_id: aktiverNutzer.id
+          });
+          if (dbFehler) throw dbFehler;
+
+        } else {
+          // NUR Zähler erhöhen – kein neues Foto
+          const { error: dbFehler } = await sb.from("bims")
+            .update({ spottings: (vorhandener.spottings || 1) + 1 })
+            .eq("id", vorhandener.id);
+          if (dbFehler) throw dbFehler;
+        }
+
+        zeigeToast(numStr, istNeu);
+        await ladeEintraege();
+
+        // Formular zurücksetzen
+        document.getElementById("inp-num").value = "";
+        document.getElementById("inp-ort").value = "";
+        document.getElementById("inp-foto").value = "";
+        document.getElementById("foto-vorschau").style.display = "none";
+        const fotoBtn = document.getElementById("btn-foto");
+        fotoBtn.classList.remove("hat-foto");
+        fotoBtn.textContent = "📷 Foto aufnehmen";
+        aktiveFotoDatei = null;
+
+      } catch(fehler) {
+        errEl.textContent = "Fehler: " + fehler.message;
       }
 
-      speichern();
-      render();
-      zeigeToast(numStr, istNeu);
+      btn.disabled = false;
+      btn.textContent = "+ Eintragen";
+    }
 
-      // Formular zurücksetzen
-      document.getElementById("inp-num").value = "";
-      document.getElementById("inp-ort").value = "";
-      document.getElementById("inp-foto").value = "";
-      document.getElementById("foto-vorschau").style.display = "none";
-      const fotoBtn = document.getElementById("btn-foto");
-      fotoBtn.classList.remove("hat-foto");
-      fotoBtn.textContent = "📷 Foto aufnehmen";
-      aktiveFotoBase64 = null;
+    // ── EINTRÄGE LADEN ──
+    async function ladeEintraege() {
+      const { data, error } = await sb.from("bims")
+        .select("*")
+        .eq("nutzer_id", aktiverNutzer.id)
+        .order("num");
+      if (error) { console.error("Ladefehler:", error); return; }
+      alleEintraege = data;
+      render();
     }
 
     // ── EINTRAG LÖSCHEN ──
-    function deleteBim(num) {
+    async function deleteBim(id, num) {
       if (!confirm("Bim #" + num + " wirklich aus dem Sammelpass entfernen?")) return;
-      delete daten[num];
-      speichern();
-      render();
+      const { error } = await sb.from("bims").delete().eq("id", id);
+      if (error) { alert("Fehler: " + error.message); return; }
+      await ladeEintraege();
     }
 
     // ── TOAST ──
@@ -277,8 +399,8 @@
 
     // ── ANZEIGE ──
     function render() {
-      const gefunden = Object.keys(daten);
-      const total = gefunden.length;
+      const gefundenNummern = new Set(alleEintraege.map(e => e.num));
+      const total = gefundenNummern.size;
       const pct = Math.round((total / 62) * 100);
       document.getElementById("s-total").textContent = total;
       document.getElementById("s-missing").textContent = 62 - total;
@@ -286,8 +408,8 @@
       document.getElementById("progress-label").textContent = total + " von 62 Garnituren entdeckt (" + pct + "%)";
 
       let liste = ALLE_BIMS;
-      if (aktiverFilter === "gefunden") liste = ALLE_BIMS.filter(b => daten[b.num]);
-      if (aktiverFilter === "offen") liste = ALLE_BIMS.filter(b => !daten[b.num]);
+      if (aktiverFilter === "gefunden") liste = ALLE_BIMS.filter(b => gefundenNummern.has(b.num));
+      if (aktiverFilter === "offen") liste = ALLE_BIMS.filter(b => !gefundenNummern.has(b.num));
 
       const serieA = liste.filter(b => b.serie === "A");
       const serieB = liste.filter(b => b.serie === "B");
@@ -304,17 +426,16 @@
         html += "</div>";
       }
       if (!html) html = '<div style="text-align:center;padding:2rem;font-family:Space Mono,monospace;font-size:13px;color:var(--txt2)">Keine Bims in dieser Ansicht.</div>';
-
       document.getElementById("grid-wrap").innerHTML = html;
     }
 
     // ── KARTE HTML ──
     function karteHTML(bim) {
-      const e = daten[bim.num];
+      const e = alleEintraege.find(x => x.num === bim.num);
       if (e) {
         return '<div class="bim-card gefunden">' +
-          '<button class="btn-del" onclick="deleteBim(\'' + bim.num + '\')" title="Löschen">✕</button>' +
-          (e.foto ? '<img class="bim-card-foto" src="' + e.foto + '" alt="Bim ' + bim.num + '" />' : "") +
+          '<button class="btn-del" onclick="deleteBim(' + e.id + ',\'' + bim.num + '\')" title="Löschen">✕</button>' +
+          (e.foto_url ? '<img class="bim-card-foto" src="' + e.foto_url + '" alt="Bim ' + bim.num + '" />' : "") +
           '<div class="bim-card-num">#' + bim.num + '</div>' +
           '<div class="bim-card-serie">' + (bim.serie === "A" ? "🟠 alt" : "⬜ neu") + '</div>' +
           (e.ort ? '<div class="bim-card-ort">' + e.ort + '</div>' : "") +
@@ -330,9 +451,9 @@
       }
     }
 
-    document.addEventListener("keydown", e => { if (e.key === "Enter") addBim(); });
-
-    render();
+    document.addEventListener("keydown", e => {
+      if (e.key === "Enter" && document.getElementById("seite-app").classList.contains("aktiv")) addBim();
+    });
   </script>
 </body>
 </html>
