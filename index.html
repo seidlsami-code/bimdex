@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<!--
+  ╔══════════════════════════════════════════════════════╗
+  ║  BimDex – Linz Straßenbahn Sammelpass               ║
+  ║  index.html                                          ║
+  ║                                                      ║
+  ║  Diese Datei ist das SKELETT der App.                ║
+  ║  Sie beschreibt NUR die Struktur – was auf der       ║
+  ║  Seite vorhanden ist, aber noch nicht wie es         ║
+  ║  aussieht (das macht style.css) oder wie es          ║
+  ║  funktioniert (das macht app.js).                    ║
+  ╚══════════════════════════════════════════════════════╝
+-->
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BimDex – Linz Straßenbahn Sammelpass</title>
+
+  <!-- Google Fonts: Syne für Überschriften, Space Mono für Zahlen/Code-Text -->
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+
+  <!-- Unser eigenes Design (style.css) -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════
+       TOAST (Benachrichtigung oben)
+       Erscheint kurz wenn eine Bim eingetragen wird.
+       Normalerweise unsichtbar – app.js macht ihn sichtbar.
+  ═══════════════════════════════════════════ -->
+  <div class="toast" id="toast">
+    <span id="toast-titel">🚋 Neue Bim entdeckt!</span>
+    <div class="toast-sub" id="toast-sub"></div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       MEILENSTEIN POPUP
+       Erscheint bei 25%, 50%, 75% und 100% Fortschritt.
+       onclick="schliesseMeilenstein()" = Klick auf den
+       dunklen Hintergrund schließt das Popup.
+  ═══════════════════════════════════════════ -->
+  <div class="meilenstein" id="meilenstein" onclick="schliesseMeilenstein()">
+    <div class="meilenstein-card" onclick="event.stopPropagation()">
+      <div class="meilenstein-emoji" id="ms-emoji">🎉</div>
+      <div class="meilenstein-titel" id="ms-titel">Meilenstein!</div>
+      <div class="meilenstein-text" id="ms-text"></div>
+      <button class="meilenstein-btn" onclick="schliesseMeilenstein()">Weiter sammeln!</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       SEITE 1: LOGIN / REGISTRIERUNG
+       Wird angezeigt wenn niemand eingeloggt ist.
+       Die Klasse "aktiv" macht eine Seite sichtbar –
+       app.js wechselt diese Klasse je nach Login-Status.
+  ═══════════════════════════════════════════ -->
+  <div class="page aktiv" id="seite-auth">
+    <div class="auth-wrap">
+      <div class="auth-card">
+
+        <div class="auth-title">BimDex</div>
+        <div class="auth-subtitle">Linz Straßenbahn Sammelpass</div>
+
+        <!-- Tabs: Anmelden oder Registrieren -->
+        <div class="auth-tabs">
+          <button class="auth-tab aktiv" onclick="authTab('login', this)">Anmelden</button>
+          <button class="auth-tab" onclick="authTab('register', this)">Registrieren</button>
+        </div>
+
+        <div class="field">
+          <label>E-Mail</label>
+          <input type="email" id="auth-email" placeholder="deine@email.com" />
+        </div>
+
+        <div class="field">
+          <label>Passwort</label>
+          <input type="password" id="auth-passwort" placeholder="Mindestens 6 Zeichen" />
+        </div>
+
+        <button class="btn-primary" id="auth-btn" onclick="authAktion()">Anmelden</button>
+
+        <!-- Fehlermeldungen erscheinen hier -->
+        <div class="auth-error" id="auth-error"></div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       SEITE 2: HAUPT-APP
+       Wird angezeigt wenn jemand eingeloggt ist.
+  ═══════════════════════════════════════════ -->
+  <div class="page" id="seite-app">
+    <div class="container">
+
+      <!-- KOPFZEILE: Titel + Statistik + Abmelden -->
+      <div class="header">
+        <div>
+          <div class="title">BimDex</div>
+          <div class="subtitle">Linz Straßenbahn Sammelpass</div>
+        </div>
+        <div class="header-rechts">
+          <div class="stats">
+            <!-- Diese Zahlen werden von app.js aktualisiert -->
+            <div class="stat">
+              <div class="stat-num" id="s-total">0</div>
+              <div class="stat-label">gesammelt</div>
+            </div>
+            <div class="stat">
+              <div class="stat-num" id="s-missing">62</div>
+              <div class="stat-label">noch offen</div>
+            </div>
+          </div>
+          <!-- span#user-email wird von app.js mit der E-Mail befüllt -->
+          <button class="btn-logout" onclick="abmelden()">
+            Abmelden (<span id="user-email"></span>)
+          </button>
+        </div>
+      </div>
+
+      <!-- FORTSCHRITTSBALKEN -->
+      <div class="progress-label" id="progress-label">0 von 62 Garnituren entdeckt</div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" id="progress-bar" style="width:0%"></div>
+      </div>
+
+      <!-- FORMULAR: Neue Bim eintragen -->
+      <div class="form-card">
+        <div class="form-title">Bim eintragen / nochmals gesehen</div>
+        <div class="form-row">
+
+          <div class="form-group">
+            <label>Nummer (Pflichtfeld)</label>
+            <input type="number" id="inp-num" placeholder="z.B. 012" min="1" max="999" />
+          </div>
+
+          <div class="form-group">
+            <label>Ort (optional)</label>
+            <input type="text" id="inp-ort" placeholder="z.B. Hauptplatz" />
+          </div>
+
+          <div class="form-group">
+            <label>Foto (beim 1. Mal Pflicht)</label>
+            <!--
+              Das file-input ist unsichtbar (display:none in CSS).
+              Der sichtbare Button darunter löst es per onclick aus.
+              capture="environment" = öffnet die Rückkamera am Handy.
+              onchange = wird aufgerufen sobald ein Foto gewählt wurde.
+            -->
+            <input type="file" id="inp-foto" accept="image/*"
+                   capture="environment" onchange="fotoGewaehlt(this)" />
+            <button class="btn-foto" id="btn-foto"
+                    onclick="document.getElementById('inp-foto').click()">
+              📷 Foto aufnehmen
+            </button>
+            <!-- Vorschaubild erscheint nach Fotoauswahl -->
+            <img id="foto-vorschau" alt="Vorschau" />
+            <!-- Grüner Ladebalken während des Uploads -->
+            <div class="upload-bar-wrap" id="upload-bar-wrap">
+              <div class="upload-bar-fill" id="upload-bar"></div>
+            </div>
+          </div>
+
+          <button class="btn-add" id="btn-add" onclick="addBim()">+ Eintragen</button>
+        </div>
+        <!-- Fehlermeldungen erscheinen hier -->
+        <div class="form-error" id="form-error"></div>
+      </div>
+
+      <!-- FILTER BUTTONS -->
+      <div class="filter-row">
+        <span class="filter-label">Zeige:</span>
+        <button class="filter-btn aktiv" onclick="setFilter('alle', this)">Alle</button>
+        <button class="filter-btn" onclick="setFilter('gefunden', this)">Gefunden</button>
+        <button class="filter-btn" onclick="setFilter('offen', this)">Noch offen</button>
+      </div>
+
+      <!-- BIMS GRID: wird komplett von app.js befüllt -->
+      <div id="grid-wrap"></div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       EXTERNE BIBLIOTHEKEN & EIGENER CODE
+
+       Supabase: das Tool das uns mit der Datenbank
+       und dem Foto-Speicher verbindet.
+       Wir laden es von einem CDN (Content Delivery
+       Network) – das ist ein Server der solche
+       Bibliotheken für alle bereitstellt.
+
+       app.js: unsere eigene Logik, ganz unten
+       geladen damit das HTML bereits existiert
+       wenn JavaScript darauf zugreift.
+  ═══════════════════════════════════════════ -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="app.js"></script>
+
+</body>
+</html>

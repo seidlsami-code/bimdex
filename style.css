@@ -1,0 +1,765 @@
+/*
+  ╔══════════════════════════════════════════════════════╗
+  ║  BimDex – style.css                                  ║
+  ║                                                      ║
+  ║  Diese Datei ist das DESIGN der App.                 ║
+  ║  Sie beschreibt wie jedes Element aussieht –         ║
+  ║  Farben, Abstände, Schriften, Animationen.           ║
+  ║                                                      ║
+  ║  CSS funktioniert so:                                ║
+  ║    .klassenname { eigenschaft: wert; }               ║
+  ║  Zum Beispiel:                                       ║
+  ║    .title { color: red; font-size: 32px; }           ║
+  ╚══════════════════════════════════════════════════════╝
+*/
+
+/* ── GRUNDEINSTELLUNGEN ─────────────────────────────────
+   * = gilt für ALLE Elemente.
+   box-sizing: border-box = Abstände werden nach innen
+   berechnet, nicht nach außen (macht Layouts einfacher).
+   margin/padding 0 = Browser-Standardabstände entfernen.
+*/
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ── FARBPALETTE ────────────────────────────────────────
+   CSS-Variablen (--name) sind wie Konstanten in Mathe.
+   Wir definieren alle Farben hier einmal und verwenden
+   sie überall als var(--orange) etc.
+   So können wir die gesamte App-Farbe an einem Ort ändern.
+*/
+:root {
+  --orange:       #D85A30;  /* Hauptfarbe: Linzer Bim Orange */
+  --orange-light: #FAECE7;  /* Heller Orange-Hintergrund für Badges */
+  --orange-dark:  #4A1B0C;  /* Dunkles Orange für Text auf hellem Hintergrund */
+  --grau:         #8a8a85;  /* Grau für nicht gefundene Bims */
+  --gruen:        #1D9E75;  /* Grün für Erfolg (Toast, Upload-Balken) */
+  --danger:       #E24B4A;  /* Rot für Fehler und Löschen */
+
+  /* Hintergründe */
+  --bg:           #ffffff;  /* Weiß: Karten, Formulare */
+  --bg2:          #f5f4f0;  /* Hellgrau: Seitenhintergrund */
+
+  /* Text */
+  --txt:          #1a1a18;  /* Fast-Schwarz für Haupttext */
+  --txt2:         #6b6a66;  /* Mittelgrau für Nebentext */
+
+  /* Rahmen */
+  --border:       rgba(0,0,0,0.12);  /* Halbtransparenter Rahmen */
+
+  /* Abrundungen */
+  --radius-md:    8px;
+  --radius-lg:    12px;
+}
+
+/* ── DARK MODE ──────────────────────────────────────────
+   Wenn das Gerät auf Dunkel-Modus eingestellt ist,
+   werden diese Farben stattdessen verwendet.
+   prefers-color-scheme ist eine automatische Erkennung.
+*/
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:           #1c1c1a;
+    --bg2:          #252522;
+    --border:       rgba(255,255,255,0.12);
+    --txt:          #f0efe8;
+    --txt2:         #999890;
+    --orange-light: #3a1a0d;
+    --orange-dark:  #f5c4b3;
+  }
+}
+
+/* ── GRUNDLAYOUT ────────────────────────────────────────
+   body = der gesamte Seiteninhalt.
+   min-height: 100vh = mindestens die volle Bildschirmhöhe.
+*/
+body {
+  font-family: "Syne", sans-serif;
+  background: var(--bg2);
+  color: var(--txt);
+  min-height: 100vh;
+}
+
+/* ── SEITEN-WECHSEL ─────────────────────────────────────
+   Jede "Seite" (Login, App) ist standardmäßig
+   versteckt (display: none).
+   Nur die Seite mit der Klasse "aktiv" wird angezeigt.
+   app.js wechselt diese Klasse je nach Login-Status.
+*/
+.page        { display: none; }
+.page.aktiv  { display: block; }
+
+
+/* ════════════════════════════════════════════════════════
+   AUTH-SEITE (Login / Registrierung)
+════════════════════════════════════════════════════════ */
+
+/* Zentriert die Login-Karte vertikal und horizontal */
+.auth-wrap {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+/* Die weiße Login-Karte */
+.auth-card {
+  background: var(--bg);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  width: 100%;
+  max-width: 380px;  /* Nicht zu breit auf Desktop */
+}
+
+.auth-title {
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -1px;
+  color: var(--orange);
+  margin-bottom: 4px;
+}
+
+.auth-subtitle {
+  font-size: 12px;
+  font-family: "Space Mono", monospace;
+  color: var(--txt2);
+  margin-bottom: 1.5rem;
+}
+
+/* Tab-Leiste: Anmelden / Registrieren */
+.auth-tabs {
+  display: flex;
+  margin-bottom: 1.5rem;
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;  /* Runde Ecken auch für Kinder-Elemente */
+}
+
+.auth-tab {
+  flex: 1;  /* Beide Tabs gleich breit */
+  padding: 8px;
+  font-family: "Syne", sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--txt2);
+  transition: all 0.15s;
+}
+
+/* Aktiver Tab: orange hinterlegt */
+.auth-tab.aktiv {
+  background: var(--orange);
+  color: #fff;
+}
+
+/* Eingabefeld-Gruppe (Label + Input) */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.field label {
+  font-size: 12px;
+  font-family: "Space Mono", monospace;
+  color: var(--txt2);
+}
+
+.field input {
+  font-family: "Syne", sans-serif;
+  font-size: 14px;
+  padding: 10px 12px;
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg2);
+  color: var(--txt);
+  outline: none;
+  transition: border-color 0.15s;
+  width: 100%;
+}
+
+/* Rahmen wird orange wenn das Feld aktiv ist */
+.field input:focus {
+  border-color: var(--orange);
+}
+
+/* Großer orangener Button */
+.btn-primary {
+  width: 100%;
+  padding: 12px;
+  background: var(--orange);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-md);
+  font-family: "Syne", sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: opacity 0.15s;
+}
+
+.btn-primary:hover    { opacity: 0.85; }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* Rote Fehlermeldung unter dem Button */
+.auth-error {
+  font-size: 12px;
+  color: var(--danger);
+  font-family: "Space Mono", monospace;
+  margin-top: 8px;
+  min-height: 16px;  /* Verhindert Springen wenn Text erscheint/verschwindet */
+}
+
+
+/* ════════════════════════════════════════════════════════
+   HAUPT-APP LAYOUT
+════════════════════════════════════════════════════════ */
+
+/* Zentrierter Inhaltsbereich mit maximalem Breite */
+.container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 2rem 1rem 4rem;
+}
+
+/* Kopfzeile: Titel links, Statistik rechts */
+.header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  gap: 12px;
+  flex-wrap: wrap;  /* Auf kleinen Bildschirmen umbrechen */
+}
+
+.title {
+  font-size: 36px;
+  font-weight: 800;
+  letter-spacing: -1.5px;
+  line-height: 1;
+  color: var(--orange);
+}
+
+.subtitle {
+  font-size: 13px;
+  font-family: "Space Mono", monospace;
+  color: var(--txt2);
+  margin-top: 5px;
+}
+
+/* Rechte Seite der Kopfzeile */
+.header-rechts {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+/* Statistik-Kästchen */
+.stats { display: flex; gap: 8px; }
+
+.stat {
+  background: var(--bg);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 8px 16px;
+  text-align: center;
+  min-width: 76px;
+}
+
+.stat-num {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--orange);
+  font-family: "Space Mono", monospace;
+}
+
+.stat-label {
+  font-size: 11px;
+  font-family: "Space Mono", monospace;
+  color: var(--txt2);
+  margin-top: 2px;
+}
+
+/* Abmelden-Button: unauffällig, wird rot beim Hover */
+.btn-logout {
+  font-size: 11px;
+  font-family: "Space Mono", monospace;
+  color: var(--txt2);
+  background: transparent;
+  border: 0.5px solid var(--border);
+  border-radius: 99px;
+  padding: 4px 10px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btn-logout:hover { border-color: var(--danger); color: var(--danger); }
+
+
+/* ════════════════════════════════════════════════════════
+   FORTSCHRITTSBALKEN
+════════════════════════════════════════════════════════ */
+
+.progress-label {
+  font-size: 12px;
+  font-family: "Space Mono", monospace;
+  color: var(--txt2);
+  margin-bottom: 6px;
+}
+
+.progress-bar-wrap {
+  background: var(--bg);
+  border-radius: 99px;
+  height: 8px;
+  margin-bottom: 1.75rem;
+  overflow: hidden;
+  border: 0.5px solid var(--border);
+}
+
+/* Der orangene Füllbalken – Breite wird von app.js gesetzt */
+.progress-bar-fill {
+  height: 100%;
+  background: var(--orange);
+  border-radius: 99px;
+  /* cubic-bezier = federnde Animation beim Wachsen */
+  transition: width 0.6s cubic-bezier(0.34, 1.2, 0.64, 1);
+}
+
+
+/* ════════════════════════════════════════════════════════
+   UPLOAD-FORTSCHRITTSBALKEN (grün, unter Foto-Button)
+════════════════════════════════════════════════════════ */
+
+.upload-bar-wrap {
+  height: 4px;
+  background: var(--border);
+  border-radius: 99px;
+  margin-top: 8px;
+  overflow: hidden;
+  display: none;  /* Nur sichtbar während Upload */
+}
+
+.upload-bar-fill {
+  height: 100%;
+  background: var(--gruen);
+  border-radius: 99px;
+  width: 0%;
+  transition: width 0.2s ease;
+}
+
+
+/* ════════════════════════════════════════════════════════
+   FORMULAR
+════════════════════════════════════════════════════════ */
+
+.form-card {
+  background: var(--bg);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.form-title {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 14px;
+  color: var(--txt);
+}
+
+/* Felder nebeneinander, umbrechen auf kleinen Screens */
+.form-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: flex-end;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  min-width: 120px;
+}
+
+.form-group label {
+  font-size: 12px;
+  font-family: "Space Mono", monospace;
+  color: var(--txt2);
+}
+
+/* Texteingabefelder */
+input[type="number"],
+input[type="text"] {
+  font-family: "Syne", sans-serif;
+  font-size: 14px;
+  padding: 8px 10px;
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg2);
+  color: var(--txt);
+  outline: none;
+  width: 100%;
+  transition: border-color 0.15s;
+}
+
+input:focus { border-color: var(--orange); }
+input[type="number"] { max-width: 110px; }
+
+/* Das echte Datei-Input ist unsichtbar */
+#inp-foto { display: none; }
+
+/* Sichtbarer Foto-Button */
+.btn-foto {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  background: transparent;
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 8px 12px;
+  font-family: "Syne", sans-serif;
+  font-size: 13px;
+  color: var(--txt2);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btn-foto:hover          { border-color: var(--orange); color: var(--orange); }
+.btn-foto.hat-foto       { border-color: var(--gruen); color: var(--gruen); background: #e6f5f0; }
+
+/* Vorschaubild nach Fotoauswahl */
+#foto-vorschau {
+  width: 100%;
+  max-height: 100px;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  border: 0.5px solid var(--border);
+  display: none;  /* Wird von app.js sichtbar gemacht */
+  margin-top: 6px;
+}
+
+/* Eintragen-Button */
+.btn-add {
+  background: var(--orange);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 10px 20px;
+  font-family: "Syne", sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity 0.15s, transform 0.1s;
+  flex-shrink: 0;
+}
+.btn-add:hover    { opacity: 0.85; }
+.btn-add:active   { transform: scale(0.97); }
+.btn-add:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* Rote Fehlermeldung unter dem Formular */
+.form-error {
+  font-size: 12px;
+  color: var(--danger);
+  font-family: "Space Mono", monospace;
+  margin-top: 8px;
+  min-height: 16px;
+}
+
+
+/* ════════════════════════════════════════════════════════
+   FILTER-BUTTONS
+════════════════════════════════════════════════════════ */
+
+.filter-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.filter-label {
+  font-size: 12px;
+  font-family: "Space Mono", monospace;
+  color: var(--txt2);
+}
+
+.filter-btn {
+  background: transparent;
+  border: 0.5px solid var(--border);
+  border-radius: 99px;
+  padding: 4px 14px;
+  font-family: "Space Mono", monospace;
+  font-size: 12px;
+  cursor: pointer;
+  color: var(--txt2);
+  transition: all 0.15s;
+}
+
+.filter-btn.aktiv              { background: var(--orange); border-color: var(--orange); color: #fff; }
+.filter-btn:hover:not(.aktiv)  { border-color: var(--orange); color: var(--orange); }
+
+
+/* ════════════════════════════════════════════════════════
+   BIM GRID & KARTEN
+════════════════════════════════════════════════════════ */
+
+/* Serien-Überschrift (z.B. "Serie A · 001-033") */
+.serie-label {
+  font-size: 11px;
+  font-family: "Space Mono", monospace;
+  color: var(--txt2);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin: 1.25rem 0 0.5rem;
+}
+
+/* Automatisches Raster: so viele Karten wie passen */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 10px;
+}
+
+/* Einzelne Bim-Karte */
+.bim-card {
+  background: var(--bg);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 12px;
+  position: relative;
+  transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+
+/* Gefundene Karte: einblenden + Hover-Effekt */
+.bim-card.gefunden {
+  animation: einblenden 0.3s ease both;
+}
+.bim-card.gefunden:hover {
+  border-color: var(--orange);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(216,90,48,0.12);
+}
+
+/* Noch nicht gefundene Karte: ausgegraut, wackelt beim Antippen */
+.bim-card.offen              { opacity: 0.42; cursor: pointer; }
+.bim-card.offen:hover        { opacity: 0.65; }
+.bim-card.offen.wackeln      { animation: wackeln 0.4s ease; }
+.bim-card.offen .bim-card-num { color: var(--grau); }
+
+/* ── ANIMATIONEN ── */
+@keyframes einblenden {
+  from { opacity: 0; transform: translateY(6px) scale(0.97); }
+  to   { opacity: 1; transform: none; }
+}
+
+@keyframes wackeln {
+  0%,100% { transform: rotate(0deg); }
+  20%     { transform: rotate(-4deg); }
+  50%     { transform: rotate(4deg); }
+  75%     { transform: rotate(-2deg); }
+}
+
+/* ── SKELETON-LADEANIMATION ──
+   Erscheint während Daten aus Supabase geladen werden.
+   Der schimmernde Gradient täuscht einen Ladefortschritt vor.
+*/
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--bg2) 25%,
+    var(--border) 50%,
+    var(--bg2) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.2s infinite;
+  border-radius: var(--radius-md);
+}
+@keyframes skeleton-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.skeleton-karte { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 12px; }
+.skeleton-foto  { width: 100%; aspect-ratio: 4/3; border-radius: var(--radius-md); margin-bottom: 8px; }
+.skeleton-num   { height: 28px; width: 60%; border-radius: 4px; margin-bottom: 6px; }
+.skeleton-text  { height: 12px; width: 40%; border-radius: 4px; }
+
+/* ── KARTEN-INHALTE ── */
+
+/* Foto auf der Karte – beginnt unsichtbar, blendet ein wenn geladen */
+.bim-card-foto {
+  width: 100%;
+  aspect-ratio: 4/3;  /* Immer gleiche Proportionen */
+  object-fit: cover;  /* Füllt den Bereich ohne Verzerren */
+  border-radius: var(--radius-md);
+  margin-bottom: 8px;
+  border: 0.5px solid var(--border);
+  transition: opacity 0.3s;
+}
+.bim-card-foto.laden { opacity: 0; }  /* Unsichtbar bis Foto fertig geladen */
+
+/* Platzhalter für nicht gefundene Bims */
+.bim-card-placeholder {
+  width: 100%;
+  aspect-ratio: 4/3;
+  border-radius: var(--radius-md);
+  margin-bottom: 8px;
+  border: 0.5px dashed var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  background: var(--bg2);
+}
+
+.bim-card-num {
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -1px;
+  color: var(--orange);
+  font-family: "Space Mono", monospace;
+  line-height: 1;
+}
+
+.bim-card-serie {
+  font-size: 10px;
+  font-family: "Space Mono", monospace;
+  color: var(--txt2);
+  margin-top: 3px;
+}
+
+.bim-card-ort {
+  font-size: 12px;
+  color: var(--txt2);
+  margin-top: 4px;
+  /* Zu langer Text wird mit ... abgeschnitten */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bim-card-date {
+  font-size: 10px;
+  font-family: "Space Mono", monospace;
+  color: var(--txt2);
+  margin-top: 4px;
+  opacity: 0.7;
+}
+
+/* Badge: "3x gesehen" */
+.bim-card-spotted {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-family: "Space Mono", monospace;
+  background: var(--orange-light);
+  color: var(--orange-dark);
+  padding: 2px 8px;
+  border-radius: 99px;
+  margin-top: 5px;
+}
+
+/* Löschen-Button oben rechts auf der Karte */
+.btn-del {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--txt2);
+  font-size: 13px;
+  padding: 2px 4px;
+  opacity: 0.35;
+  transition: opacity 0.15s, color 0.15s;
+  border-radius: 4px;
+}
+.btn-del:hover { opacity: 1; color: var(--danger); }
+
+
+/* ════════════════════════════════════════════════════════
+   MEILENSTEIN POPUP
+════════════════════════════════════════════════════════ */
+
+/* Dunkler Hintergrund über der ganzen Seite */
+.meilenstein {
+  display: none;
+  position: fixed;
+  inset: 0;  /* = top/right/bottom/left: 0 – füllt den ganzen Bildschirm */
+  background: rgba(0,0,0,0.5);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+
+.meilenstein.sichtbar {
+  display: flex;
+  animation: einblenden 0.3s ease;
+}
+
+/* Die weiße Karte in der Mitte */
+.meilenstein-card {
+  background: var(--bg);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  text-align: center;
+  max-width: 300px;
+  margin: 1rem;
+}
+
+.meilenstein-emoji  { font-size: 48px; margin-bottom: 12px; }
+.meilenstein-titel  { font-size: 22px; font-weight: 800; color: var(--orange); margin-bottom: 6px; }
+.meilenstein-text   { font-size: 13px; font-family: "Space Mono", monospace; color: var(--txt2); margin-bottom: 1.25rem; }
+.meilenstein-btn    { background: var(--orange); color: #fff; border: none; border-radius: var(--radius-md); padding: 10px 24px; font-family: "Syne", sans-serif; font-weight: 700; font-size: 14px; cursor: pointer; }
+
+
+/* ════════════════════════════════════════════════════════
+   TOAST (Benachrichtigung oben)
+════════════════════════════════════════════════════════ */
+
+.toast {
+  position: fixed;
+  top: 1.5rem;
+  left: 50%;
+  /* Standardmäßig unsichtbar oberhalb des Bildschirms */
+  transform: translateX(-50%) translateY(-120px);
+  background: var(--gruen);
+  color: #fff;
+  padding: 14px 24px;
+  border-radius: var(--radius-lg);
+  font-family: "Syne", sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  z-index: 999;
+  /* Federnde Animation beim Ein- und Ausblenden */
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* Sichtbar: von oben reinfedern */
+.toast.sichtbar {
+  transform: translateX(-50%) translateY(0);
+}
+
+.toast-sub {
+  font-size: 12px;
+  font-weight: 400;
+  opacity: 0.85;
+  margin-top: 2px;
+  font-family: "Space Mono", monospace;
+}
